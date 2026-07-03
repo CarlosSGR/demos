@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Taller Fierro — Mecánica de confianza | Cd. Madero</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --asfalto:#15181C;
+    --acero:#22262C;
+    --lamina:#2E343C;
+    --hueso:#EFF1F3;
+    --gris:#9AA3AE;
+    --ambar:#F5A623;
+    --verde-ok:#35C46E;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:'IBM Plex Sans',sans-serif;background:var(--asfalto);color:var(--hueso);line-height:1.6;overflow-x:hidden}
+  h1,h2,h3{font-family:'Chakra Petch',sans-serif;line-height:1.12;text-transform:uppercase;letter-spacing:.02em}
+  a{text-decoration:none;color:inherit}
+  .btn{display:inline-flex;align-items:center;gap:9px;padding:13px 24px;border-radius:6px;font-weight:600;font-size:.95rem;border:none;cursor:pointer;transition:transform .2s,box-shadow .2s;font-family:'Chakra Petch';text-transform:uppercase;letter-spacing:.04em}
+  .btn:hover{transform:translateY(-2px)}
+  .btn-ambar{background:var(--ambar);color:#1A1508;box-shadow:0 8px 22px rgba(245,166,35,.28)}
+  .btn-wa{background:#25D366;color:#06220F;box-shadow:0 8px 22px rgba(37,211,102,.28)}
+  .btn-linea{background:transparent;border:1.5px solid var(--lamina);color:var(--hueso)}
+  .btn-linea:hover{border-color:var(--ambar)}
+  .ico{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+  /* franja de precaución */
+  .franja{height:10px;background:repeating-linear-gradient(-45deg,var(--ambar) 0 16px,var(--asfalto) 16px 32px)}
+
+  header{position:fixed;inset:0 0 auto 0;z-index:100;background:rgba(21,24,28,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--lamina)}
+  .nav{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:14px 24px}
+  .logo{display:flex;align-items:center;gap:10px;font-family:'Chakra Petch';font-weight:700;font-size:1.15rem;text-transform:uppercase}
+  .logo .tuerca{width:32px;height:32px;color:var(--ambar);animation:girar 12s linear infinite}
+  @keyframes girar{to{transform:rotate(360deg)}}
+  .nav-links{display:flex;gap:26px;font-weight:500;font-size:.92rem;color:var(--gris)}
+  .nav-links a:hover{color:var(--ambar)}
+  .nav .btn{padding:9px 16px;font-size:.82rem}
+
+  .hero{max-width:1100px;margin:0 auto;padding:150px 24px 80px;display:grid;grid-template-columns:1.05fr .95fr;gap:52px;align-items:center}
+  .status{display:inline-flex;align-items:center;gap:9px;background:var(--acero);border:1px solid var(--lamina);border-radius:4px;padding:7px 14px;font-family:'Chakra Petch';font-size:.78rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gris);margin-bottom:22px}
+  .status i{width:9px;height:9px;border-radius:50%;background:var(--verde-ok);animation:parp 1.8s infinite}
+  @keyframes parp{50%{opacity:.3}}
+  .hero h1{font-size:clamp(2.3rem,5vw,3.6rem);font-weight:700}
+  .hero h1 span{color:var(--ambar)}
+  .hero p{font-size:1.08rem;color:var(--gris);margin:20px 0 30px;max-width:31rem}
+  .hero-ctas{display:flex;gap:14px;flex-wrap:wrap}
+  .specs{display:flex;gap:0;margin-top:36px;border:1px solid var(--lamina);border-radius:8px;overflow:hidden}
+  .spec{flex:1;padding:16px 18px;background:var(--acero)}
+  .spec + .spec{border-left:1px solid var(--lamina)}
+  .spec strong{font-family:'Chakra Petch';font-size:1.35rem;color:var(--ambar);display:block}
+  .spec span{font-size:.8rem;color:var(--gris)}
+
+  /* Cotizador — la firma del sitio */
+  .cotizador{background:var(--acero);border:1px solid var(--lamina);border-radius:14px;padding:30px;box-shadow:0 30px 60px rgba(0,0,0,.4)}
+  .cotizador h3{font-size:1.05rem;color:var(--ambar);display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .cotizador > p{font-size:.9rem;color:var(--gris);margin-bottom:20px}
+  .cotizador label{display:block;font-family:'Chakra Petch';font-size:.78rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--gris);margin:16px 0 8px}
+  .cotizador select,.cotizador input{width:100%;padding:13px 15px;background:var(--asfalto);border:1.5px solid var(--lamina);border-radius:8px;color:var(--hueso);font-family:'IBM Plex Sans';font-size:.95rem;transition:border-color .2s}
+  .cotizador select:focus,.cotizador input:focus{outline:none;border-color:var(--ambar)}
+  .diag{margin-top:20px;background:var(--asfalto);border:1px dashed var(--lamina);border-radius:10px;padding:18px;display:none}
+  .diag.on{display:block;animation:aparece .4s}
+  @keyframes aparece{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .diag .titulo{font-family:'Chakra Petch';font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gris)}
+  .diag .servicio{font-family:'Chakra Petch';font-weight:700;font-size:1.15rem;color:var(--hueso);margin:6px 0 2px}
+  .diag .rango{color:var(--verde-ok);font-weight:600;font-size:.95rem}
+  .diag small{display:block;color:var(--gris);margin-top:8px;font-size:.82rem}
+  .cotizador .btn{width:100%;justify-content:center;margin-top:20px}
+
+  section{padding:80px 24px}
+  .wrap{max-width:1100px;margin:0 auto}
+  .sec-head{margin-bottom:44px;max-width:640px}
+  .tag{color:var(--ambar);font-family:'Chakra Petch';font-weight:600;font-size:.78rem;letter-spacing:.16em;text-transform:uppercase}
+  .sec-head h2{font-size:clamp(1.7rem,3.2vw,2.3rem);margin-top:10px}
+  .sec-head p{color:var(--gris);margin-top:12px}
+
+  /* Servicios */
+  .svc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px}
+  .svc{background:var(--acero);border:1px solid var(--lamina);border-radius:12px;padding:26px 22px;transition:transform .25s,border-color .25s;position:relative;overflow:hidden}
+  .svc::before{content:'';position:absolute;top:0;left:0;width:100%;height:3px;background:var(--ambar);transform:scaleX(0);transform-origin:left;transition:transform .3s}
+  .svc:hover{transform:translateY(-5px);border-color:rgba(245,166,35,.4)}
+  .svc:hover::before{transform:scaleX(1)}
+  .svc .ico{width:34px;height:34px;color:var(--ambar);margin-bottom:16px}
+  .svc h3{font-size:1rem;margin-bottom:8px}
+  .svc p{font-size:.9rem;color:var(--gris)}
+
+  /* Proceso */
+  .proceso{background:var(--acero);border-top:1px solid var(--lamina);border-bottom:1px solid var(--lamina)}
+  .pasos{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;counter-reset:paso}
+  .paso{position:relative;padding-top:14px}
+  .paso::before{counter-increment:paso;content:"0" counter(paso);font-family:'Chakra Petch';font-weight:700;font-size:2.4rem;color:transparent;-webkit-text-stroke:1.5px var(--ambar);display:block;margin-bottom:10px}
+  .paso h3{font-size:.98rem;margin-bottom:6px}
+  .paso p{font-size:.88rem;color:var(--gris)}
+
+  /* Confianza */
+  .confianza .wrap{display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:center}
+  .garantia{background:linear-gradient(150deg,var(--acero),var(--asfalto));border:1px solid var(--lamina);border-radius:14px;padding:34px;text-align:center}
+  .garantia .sello-g{width:110px;height:110px;margin:0 auto 18px;border-radius:50%;border:2px dashed var(--ambar);display:grid;place-items:center;animation:girar 30s linear infinite}
+  .garantia .sello-g .ico{width:44px;height:44px;color:var(--ambar);animation:girar 30s linear infinite reverse}
+  .garantia strong{font-family:'Chakra Petch';font-size:1.3rem;text-transform:uppercase;display:block}
+  .garantia span{color:var(--gris);font-size:.92rem}
+  .check-list{list-style:none}
+  .check-list li{display:flex;gap:14px;padding:13px 0;border-bottom:1px solid var(--lamina);align-items:flex-start}
+  .check-list .ico{color:var(--verde-ok);flex:none;margin-top:3px}
+  .check-list strong{display:block}
+  .check-list span{font-size:.9rem;color:var(--gris)}
+
+  footer.site{background:#0E1114;color:var(--gris);padding:44px 24px;border-top:1px solid var(--lamina)}
+  footer.site .wrap{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;font-size:.88rem}
+
+  .wa-float{position:fixed;right:22px;bottom:22px;z-index:200;width:60px;height:60px;border-radius:50%;background:#25D366;display:grid;place-items:center;box-shadow:0 10px 28px rgba(37,211,102,.4);transition:transform .2s}
+  .wa-float:hover{transform:scale(1.1)}
+  .wa-float svg{width:32px;height:32px;fill:#fff}
+
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s,transform .7s}
+  .reveal.in{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}}
+  @media (max-width:880px){
+    .nav-links{display:none}
+    .hero{grid-template-columns:1fr;padding-top:130px}
+    .pasos{grid-template-columns:1fr 1fr}
+    .confianza .wrap{grid-template-columns:1fr}
+    .specs{flex-direction:column}
+    .spec + .spec{border-left:none;border-top:1px solid var(--lamina)}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <a class="logo" href="#">
+      <svg class="tuerca" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1.5l2.6 1.5v3l2.6 1.5 2.6-1.5 2.6 1.5v3l-2.6 1.5v3l2.6 1.5v3l-2.6 1.5-2.6-1.5-2.6 1.5v3L12 22.5l-2.6-1.5v-3l-2.6-1.5-2.6 1.5-2.6-1.5v-3l2.6-1.5v-3L1.6 7.5v-3l2.6-1.5 2.6 1.5 2.6-1.5v-3z" opacity="0"/><path d="M19.4 13a7.5 7.5 0 0 0 0-2l2-1.6-2-3.4-2.4 1a7.5 7.5 0 0 0-1.7-1L15 3.5h-4l-.3 2.5a7.5 7.5 0 0 0-1.7 1l-2.4-1-2 3.4L6.6 11a7.5 7.5 0 0 0 0 2l-2 1.6 2 3.4 2.4-1a7.5 7.5 0 0 0 1.7 1l.3 2.5h4l.3-2.5a7.5 7.5 0 0 0 1.7-1l2.4 1 2-3.4-2-1.6z"/><circle cx="12" cy="12" r="2.8" fill="#15181C"/></svg>
+      Taller Fierro
+    </a>
+    <nav class="nav-links">
+      <a href="#servicios">Servicios</a>
+      <a href="#proceso">Cómo trabajamos</a>
+      <a href="#confianza">Garantía</a>
+    </nav>
+    <a class="btn btn-ambar" href="#cotiza">Cotiza gratis</a>
+  </div>
+</header>
+
+<main>
+  <div style="height:62px"></div>
+  <div class="franja"></div>
+
+  <div class="hero" id="cotiza">
+    <div>
+      <span class="status"><i></i> Recibiendo vehículos hoy</span>
+      <h1>Tu carro en manos que <span>sí saben</span></h1>
+      <p>Diagnóstico honesto, presupuesto por escrito antes de tocar una sola pieza, y garantía por escrito en cada reparación. Mecánica general, frenos, suspensión y clima.</p>
+      <div class="hero-ctas">
+        <a class="btn btn-wa" href="https://wa.me/528330000000?text=Hola%2C%20quiero%20una%20cotizaci%C3%B3n" target="_blank" rel="noopener">
+          <svg class="ico" viewBox="0 0 24 24" fill="#06220F" stroke="none"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2zm5.4 14.1c-.2.7-1.3 1.3-1.9 1.4-.5.1-1.1.1-1.8-.1-2.6-.8-4.3-2.6-5.6-4.6-.7-1.1-1.2-2.3-1.1-3.5.1-.6.4-1.2.9-1.6.2-.2.5-.3.7-.2l.6.1c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .6l-.4.6c-.2.2-.3.4-.1.7.5.9 1.2 1.7 2 2.3.5.4 1 .7 1.6.9.3.1.5.1.7-.1l.7-.8c.2-.3.4-.3.7-.2l1.8.9c.3.1.5.2.5.4.1.2.1.5-.1.7z"/></svg>
+          Cotizar por WhatsApp
+        </a>
+        <a class="btn btn-linea" href="#servicios">Ver servicios</a>
+      </div>
+      <div class="specs">
+        <div class="spec"><strong>15+</strong><span>años de experiencia</span></div>
+        <div class="spec"><strong>4.9★</strong><span>en Google</span></div>
+        <div class="spec"><strong>90 días</strong><span>de garantía escrita</span></div>
+      </div>
+    </div>
+
+    <div class="cotizador reveal">
+      <h3>
+        <svg class="ico" viewBox="0 0 24 24"><path d="M14.7 6.3a4.5 4.5 0 0 0-6 5.9L3 18v3h3l5.8-5.7a4.5 4.5 0 0 0 5.9-6l-3 3-2.5-.5-.5-2.5 3-3z"/></svg>
+        Cotizador rápido
+      </h3>
+      <p>Dinos qué le pasa a tu carro y te decimos qué revisar y el rango de precio aproximado.</p>
+      <label for="sintoma">¿Qué síntoma tiene?</label>
+      <select id="sintoma">
+        <option value="">Selecciona un síntoma...</option>
+        <option value="frenos">Rechina o vibra al frenar</option>
+        <option value="clima">El clima no enfría</option>
+        <option value="suspension">Suena al pasar topes o baches</option>
+        <option value="arranque">No arranca o batería débil</option>
+        <option value="aceite">Toca servicio de afinación / aceite</option>
+        <option value="check">Se prendió el check engine</option>
+      </select>
+      <label for="auto">Tu vehículo (opcional)</label>
+      <input id="auto" type="text" placeholder="Ej. Tsuru 2014, Versa 2020...">
+      <div class="diag" id="diag">
+        <span class="titulo">Diagnóstico probable</span>
+        <div class="servicio" id="diagServicio"></div>
+        <div class="rango" id="diagRango"></div>
+        <small>* Rango estimado de demostración. El precio final se confirma con diagnóstico físico gratuito.</small>
+      </div>
+      <button class="btn btn-ambar" id="btnCotiza" type="button">Enviar cotización por WhatsApp</button>
+    </div>
+  </div>
+
+  <section id="servicios">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="tag">Servicios</span>
+        <h2>Todo bajo el mismo cofre</h2>
+      </div>
+      <div class="svc-grid">
+        <div class="svc reveal">
+          <svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 4v3M12 17v3M4 12h3M17 12h3"/></svg>
+          <h3>Frenos</h3><p>Balatas, discos, rectificado y purgado de sistema.</p>
+        </div>
+        <div class="svc reveal">
+          <svg class="ico" viewBox="0 0 24 24"><path d="M4 18c2-1 3-4 3-6s1-6 5-6 5 4 5 6 1 5 3 6"/><path d="M8 18h8"/></svg>
+          <h3>Suspensión</h3><p>Amortiguadores, horquillas, bujes y alineación.</p>
+        </div>
+        <div class="svc reveal">
+          <svg class="ico" viewBox="0 0 24 24"><path d="M12 3v6M8 6l8 6M16 6L8 12"/><circle cx="12" cy="16" r="5"/></svg>
+          <h3>Aire acondicionado</h3><p>Carga de gas, compresores y detección de fugas.</p>
+        </div>
+        <div class="svc reveal">
+          <svg class="ico" viewBox="0 0 24 24"><rect x="5" y="8" width="14" height="10" rx="2"/><path d="M9 8V6h6v2M12 12v2"/></svg>
+          <h3>Sistema eléctrico</h3><p>Baterías, alternadores, marchas y luces.</p>
+        </div>
+        <div class="svc reveal">
+          <svg class="ico" viewBox="0 0 24 24"><path d="M6 20V8l6-4 6 4v12"/><path d="M10 20v-5h4v5"/></svg>
+          <h3>Afinación mayor</h3><p>Bujías, filtros, aceite e inyectores.</p>
+        </div>
+        <div class="svc reveal">
+          <svg class="ico" viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M5 3h14l-2 10a5 5 0 0 1-10 0L5 3z"/></svg>
+          <h3>Diagnóstico computarizado</h3><p>Escáner OBD2 para leer fallas y borrar códigos.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="proceso" id="proceso">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="tag">Cómo trabajamos</span>
+        <h2>Sin letras chiquitas</h2>
+        <p>El proceso es el mismo para todos los clientes, siempre en este orden:</p>
+      </div>
+      <div class="pasos">
+        <div class="paso reveal"><h3>Recibimos tu carro</h3><p>Revisión inicial y escáner sin costo.</p></div>
+        <div class="paso reveal"><h3>Presupuesto escrito</h3><p>Te mandamos fotos y precio por WhatsApp antes de reparar.</p></div>
+        <div class="paso reveal"><h3>Reparamos</h3><p>Solo lo que autorizaste. Refacciones con ticket.</p></div>
+        <div class="paso reveal"><h3>Entrega con garantía</h3><p>Prueba de manejo contigo y garantía por escrito.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="confianza" id="confianza">
+    <div class="wrap">
+      <div class="garantia reveal">
+        <div class="sello-g">
+          <svg class="ico" viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg>
+        </div>
+        <strong>Garantía de 90 días</strong>
+        <span>por escrito, en mano de obra y refacciones instaladas</span>
+      </div>
+      <div class="reveal">
+        <div class="sec-head" style="margin-bottom:20px">
+          <span class="tag">Por qué confiar</span>
+          <h2>Mecánica derecha</h2>
+        </div>
+        <ul class="check-list">
+          <li><svg class="ico" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg><div><strong>Nada se repara sin tu autorización</strong><span>Te avisamos por WhatsApp con foto y precio.</span></div></li>
+          <li><svg class="ico" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg><div><strong>Te devolvemos las piezas usadas</strong><span>Para que veas exactamente qué se cambió.</span></div></li>
+          <li><svg class="ico" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg><div><strong>Precios de lista, no "según el cliente"</strong><span>El mismo precio para todos, publicado en el taller.</span></div></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site">
+  <div class="wrap">
+    <span><strong style="color:#EFF1F3;font-family:'Chakra Petch';text-transform:uppercase">Taller Fierro</strong> · Calle Ejemplo 789, Cd. Madero · Lun–Sáb 8:00–18:00</span>
+    <span>© 2026 · Sitio de demostración · Diseño web: Wilo, Tampico</span>
+  </div>
+</footer>
+
+<a class="wa-float" href="https://wa.me/528330000000?text=Hola%2C%20quiero%20una%20cotizaci%C3%B3n" target="_blank" rel="noopener" aria-label="WhatsApp">
+  <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2zm5.4 14.1c-.2.7-1.3 1.3-1.9 1.4-.5.1-1.1.1-1.8-.1-2.6-.8-4.3-2.6-5.6-4.6-.7-1.1-1.2-2.3-1.1-3.5.1-.6.4-1.2.9-1.6.2-.2.5-.3.7-.2l.6.1c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .6l-.4.6c-.2.2-.3.4-.1.7.5.9 1.2 1.7 2 2.3.5.4 1 .7 1.6.9.3.1.5.1.7-.1l.7-.8c.2-.3.4-.3.7-.2l1.8.9c.3.1.5.2.5.4.1.2.1.5-.1.7z"/></svg>
+</a>
+
+<script>
+  const DIAGNOSTICOS = {
+    frenos:    ["Cambio de balatas y/o rectificado de discos", "$800 – $2,200 MXN"],
+    clima:     ["Carga de gas y revisión de fugas del A/C", "$900 – $1,800 MXN"],
+    suspension:["Revisión de amortiguadores, bujes y horquillas", "$1,200 – $4,500 MXN"],
+    arranque:  ["Prueba de batería, alternador y marcha", "$300 – $3,000 MXN"],
+    aceite:    ["Servicio de afinación con aceite y filtros", "$1,100 – $2,400 MXN"],
+    check:     ["Diagnóstico computarizado con escáner OBD2", "Escaneo GRATIS con reparación"]
+  };
+  const NOMBRES = {
+    frenos:"Rechina o vibra al frenar", clima:"El clima no enfría",
+    suspension:"Suena al pasar topes", arranque:"No arranca / batería débil",
+    aceite:"Afinación / cambio de aceite", check:"Check engine encendido"
+  };
+  const sel = document.getElementById('sintoma');
+  const diag = document.getElementById('diag');
+  sel.addEventListener('change', () => {
+    const v = sel.value;
+    if (!v) { diag.classList.remove('on'); return; }
+    document.getElementById('diagServicio').textContent = DIAGNOSTICOS[v][0];
+    document.getElementById('diagRango').textContent = DIAGNOSTICOS[v][1];
+    diag.classList.add('on');
+  });
+  document.getElementById('btnCotiza').addEventListener('click', () => {
+    const v = sel.value, auto = document.getElementById('auto').value.trim();
+    let msg = 'Hola, quiero una cotización.';
+    if (v) msg += ' Síntoma: ' + NOMBRES[v] + '.';
+    if (auto) msg += ' Vehículo: ' + auto + '.';
+    open('https://wa.me/528330000000?text=' + encodeURIComponent(msg), '_blank');
+  });
+
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+  }), { threshold: .15 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+</body>
+</html>
