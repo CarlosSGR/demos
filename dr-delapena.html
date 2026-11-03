@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="es">
+<head>
+<title>Dr. Mario De la Peña</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="claude:viewport-fit-sides" content="cover">
+<!--
+  =====================================================================
+  SITIO DEMO v2 · Dr. Mario De la Peña
+  Enfoque: las reseñas de Google son la portada. Debajo, un botón
+  grande para agendar y una sección corta sobre el doctor.
+
+  Archivo único (HTML + CSS + JS), sin dependencias. Se sube tal cual
+  a GitHub Pages, Cloudflare Pages o Netlify.
+
+  Mapa del archivo (busca estos títulos con Ctrl+F):
+    1. SEO          → descripción para Google y vista previa en WhatsApp
+    2. TOKENS       → colores y tipografías (cambiar aquí el estilo)
+    3. COMPONENTES  → estilos de cada sección
+    4. CONTENIDO    → la página, en orden
+    5. RESEÑAS      → la lista de reseñas que alimenta el carrusel
+    6. SCRIPT       → carrusel y botón de "marcas demo"
+
+  Todo lo que lleva class="ph" es un dato por confirmar con el doctor.
+  La versión anterior (más completa) está en index-v1.html.
+  =====================================================================
+-->
+
+<!-- ===================== 1. SEO ===================== -->
+<meta name="description" content="Dr. Mario De la Peña: 40 años de experiencia en la zona norte de Tampico y excelentes opiniones en Google. Atención solo con cita. Agende por WhatsApp.">
+<meta property="og:title" content="Dr. Mario De la Peña · Opiniones de pacientes">
+<meta property="og:description" content="40 años en la zona norte de Tampico. Agende su cita por WhatsApp.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_MX">
+<!-- PENDIENTE: og:image (1200×630) y URL del dominio final -->
+
+<!-- Tipografías: Newsreader (títulos), Figtree (texto), IBM Plex Mono (datos) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap">
+
+<style>
+/* ===================== 2. TOKENS =====================
+   Layout: portada centrada en la calificación y un carrusel de
+   reseñas a todo lo ancho; abajo, banda de cita y ficha del doctor.
+   Para cambiar el color principal, edita --accent (y su versión oscura). */
+:root {
+  --bg: #f6f8f7;          /* fondo general */
+  --surface: #ffffff;     /* tarjetas de reseña */
+  --band: #e9efec;        /* bandas alternas */
+  --fg: #15211e;          /* texto principal */
+  --muted: #55645f;       /* texto secundario */
+  --line: #d3ddd9;        /* bordes finos */
+  --accent: #23665a;      /* verde clínico */
+  --accent-soft: #d8ebe5;
+  --star: #c48a0e;        /* estrellas */
+  --wa: #1f8f4e;          /* botón de WhatsApp */
+  --wa-ink: #ffffff;
+  --cta-bg: #15211e;      /* banda de cita (oscura) */
+  --cta-fg: #f2f6f4;
+  --ph-bg: #fff3c4;       /* resaltado de datos por confirmar */
+  --ph-fg: #6b5200;
+
+  --font-display: "Newsreader", Georgia, "Times New Roman", serif;
+  --font-body: "Figtree", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+
+  --radius: 16px;
+  --gutter-l: max(16px, env(safe-area-inset-left, 0px));
+  --gutter-r: max(16px, env(safe-area-inset-right, 0px));
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1614; --surface: #17211e; --band: #131c1a; --fg: #e5ece9; --muted: #9fb0aa;
+    --line: #2a3834; --accent: #6cc2ad; --accent-soft: #1d3a33; --star: #e5b04a;
+    --wa: #2fae63; --wa-ink: #ffffff; --cta-bg: #1b2a26; --cta-fg: #e5ece9;
+    --ph-bg: #4a3d0c; --ph-fg: #ffe6a0; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1614; --surface: #17211e; --band: #131c1a; --fg: #e5ece9; --muted: #9fb0aa;
+  --line: #2a3834; --accent: #6cc2ad; --accent-soft: #1d3a33; --star: #e5b04a;
+  --wa: #2fae63; --wa-ink: #ffffff; --cta-bg: #1b2a26; --cta-fg: #e5ece9;
+  --ph-bg: #4a3d0c; --ph-fg: #ffe6a0; color-scheme: dark;
+}
+
+/* ===================== 3. COMPONENTES ===================== */
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg); overflow-x: hidden;
+  font-family: var(--font-body); font-size: 1.0625rem; line-height: 1.6;
+}
+a { color: var(--accent); }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 500; line-height: 1.1; text-wrap: balance; margin: 0; }
+p { margin: 0; }
+.wrap { max-width: 1080px; margin: 0 auto; padding-left: var(--gutter-l); padding-right: var(--gutter-r); }
+.eyebrow { font-family: var(--font-mono); font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+
+/* Dato por confirmar */
+.ph { background: var(--ph-bg); color: var(--ph-fg); border-radius: 4px; padding: 0 .25em; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.hide-ph .ph { background: none; color: inherit; padding: 0; }
+
+/* Barra de aviso de demo (ELIMINAR en el sitio final) */
+.demo-bar { background: var(--fg); color: var(--bg); font-size: .85rem; }
+.demo-bar .wrap { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between; padding-block: 8px; }
+.demo-bar button { font: inherit; font-size: .8rem; background: none; color: inherit; border: 1px solid currentColor; border-radius: 999px; padding: 3px 12px; cursor: pointer; }
+
+/* Encabezado */
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.site-header { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 9; background: color-mix(in srgb, var(--bg) 90%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+.site-header .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 12px; }
+.brand { font-family: var(--font-display); font-size: 1.2rem; color: var(--fg); text-decoration: none; white-space: nowrap; }
+
+/* Botones */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; font: 600 1rem/1 var(--font-body); text-decoration: none; padding: 16px 24px; border-radius: 999px; border: 1px solid transparent; cursor: pointer; transition: transform .2s ease, box-shadow .2s ease; }
+.btn:hover { transform: translateY(-2px); }
+.btn svg { width: 20px; height: 20px; flex: none; }
+.btn-wa { background: var(--wa); color: var(--wa-ink); box-shadow: 0 10px 24px -12px var(--wa); }
+.btn-wa:hover { box-shadow: 0 14px 30px -10px var(--wa); }
+.btn-ghost { background: transparent; color: var(--fg); border-color: var(--line); }
+.btn-sm { padding: 10px 16px; font-size: .9rem; }
+.btn-lg { padding: 20px 32px; font-size: 1.1rem; }
+
+/* ---------- Portada: la calificación ---------- */
+.hero { padding-block: clamp(44px, 8vw, 88px) 28px; text-align: center; }
+.hero .wrap { display: grid; justify-items: center; gap: 18px; }
+.score { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; justify-content: center; }
+.score .num { font-family: var(--font-display); font-size: clamp(4.5rem, 16vw, 7.5rem); line-height: .9; letter-spacing: -.02em; }
+.score .meta { display: grid; gap: 4px; text-align: left; }
+.score .count { color: var(--muted); font-size: .95rem; }
+/* Estrellas: una capa gris y otra dorada que se "llena" al cargar */
+.stars { position: relative; display: inline-block; font-size: 1.7rem; letter-spacing: 3px; line-height: 1; color: var(--line); }
+.stars::after { content: "★★★★★"; position: absolute; inset: 0; color: var(--star); width: var(--fill, 98%); overflow: hidden; white-space: nowrap; animation: fill 1.4s cubic-bezier(.2,.7,.2,1) both .2s; }
+@keyframes fill { from { width: 0; } }
+.google { display: inline-flex; align-items: center; gap: 8px; font-size: .9rem; color: var(--muted); }
+.google svg { width: 18px; height: 18px; }
+.hero h1 { font-size: clamp(2.2rem, 6vw, 3.6rem); max-width: 18ch; }
+.hero h1 em { color: var(--accent); }
+.hero .lead { color: var(--muted); font-size: 1.12rem; max-width: 36rem; }
+.hero .cta-row { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 6px; }
+/* Entrada suave de la portada */
+.rise { animation: rise .7s cubic-bezier(.2,.7,.2,1) both; }
+.rise:nth-child(2) { animation-delay: .08s; } .rise:nth-child(3) { animation-delay: .16s; }
+.rise:nth-child(4) { animation-delay: .24s; } .rise:nth-child(5) { animation-delay: .32s; }
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } }
+
+/* Palabras que más repiten los pacientes */
+.tags { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.tag { font-size: .88rem; padding: 6px 14px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+
+/* ---------- Carrusel de reseñas ---------- */
+.reviews { padding-block: 20px clamp(48px, 8vw, 80px); display: grid; gap: 16px; }
+.reviews-note { text-align: center; font-size: .85rem; color: var(--muted); }
+.marquee { overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); }
+.track { display: flex; gap: 16px; width: max-content; padding-block: 6px; animation: slide var(--dur, 60s) linear infinite; }
+.marquee.reverse .track { animation-direction: reverse; }
+.marquee:hover .track, .marquee:focus-within .track { animation-play-state: paused; }
+@keyframes slide { to { transform: translateX(-50%); } }
+.card { width: min(330px, 80vw); flex: none; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; display: grid; gap: 12px; align-content: start; transition: transform .25s ease, box-shadow .25s ease; }
+.card:hover { transform: translateY(-4px); box-shadow: 0 18px 34px -22px rgba(10, 40, 34, .5); }
+.card header { display: flex; align-items: center; gap: 12px; }
+.avatar { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; color: #fff; flex: none; }
+.card .who { display: grid; line-height: 1.3; min-width: 0; }
+.card .who strong { font-size: .98rem; }
+.card .who span { font-size: .8rem; color: var(--muted); }
+.card .mini { color: var(--star); letter-spacing: 2px; font-size: .95rem; }
+.card p { font-size: .98rem; }
+/* Sin animaciones: el carrusel se vuelve una fila que se desliza con el dedo */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .rise, .stars::after { animation: none; }
+  .marquee { overflow-x: auto; -webkit-mask-image: none; mask-image: none; }
+  .track { animation: none; }
+  .track [aria-hidden="true"] { display: none; }
+}
+
+/* ---------- Banda de cita ---------- */
+.cta-band { background: var(--cta-bg); color: var(--cta-fg); }
+.cta-band .wrap { padding-block: clamp(48px, 8vw, 80px); display: grid; gap: 24px; justify-items: center; text-align: center; }
+.cta-band h2 { font-size: clamp(2rem, 5vw, 3rem); }
+.cta-band p { opacity: .8; max-width: 34rem; }
+.flow { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; font-size: .95rem; }
+.flow li { display: flex; align-items: center; gap: 10px; }
+.flow li + li::before { content: "→"; opacity: .5; }
+.flow span { border: 1px solid color-mix(in srgb, var(--cta-fg) 30%, transparent); border-radius: 999px; padding: 6px 14px; }
+.cta-band .closed { font-family: var(--font-mono); font-size: .8rem; letter-spacing: .06em; text-transform: uppercase; opacity: .7; }
+
+/* ---------- Sobre el doctor (sección corta) ---------- */
+.about { padding-block: clamp(48px, 8vw, 80px); }
+.about .wrap { display: grid; grid-template-columns: 220px 1fr; gap: 36px; align-items: center; }
+@media (max-width: 700px) { .about .wrap { grid-template-columns: 1fr; gap: 24px; } }
+.portrait { aspect-ratio: 4 / 5; max-width: 100%; border-radius: var(--radius); background: var(--band); border: 1px dashed var(--line); display: grid; place-items: center; text-align: center; color: var(--muted); font-size: .85rem; padding: 16px; }
+.portrait b { display: block; font-family: var(--font-display); font-weight: 500; font-size: 3rem; color: var(--accent); }
+@media (max-width: 700px) { .portrait { max-width: 200px; } }
+.about-text { display: grid; gap: 14px; min-width: 0; }
+.about-text h2 { font-size: clamp(1.7rem, 4vw, 2.3rem); }
+.about-text > p { color: var(--muted); max-width: 40rem; }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 0 24px; margin: 6px 0 0; }
+.facts div { border-top: 1px solid var(--line); padding-block: 12px; }
+.facts dt { font-family: var(--font-mono); font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.facts dd { margin: 2px 0 0; font-weight: 600; }
+
+/* Pie y botón flotante */
+.site-footer { border-top: 1px solid var(--line); padding-block: 28px 110px; font-size: .9rem; color: var(--muted); }
+.site-footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px 32px; }
+.wa-float { position: fixed; z-index: 20; right: calc(16px + env(safe-area-inset-right, 0px)); bottom: calc(16px + env(safe-area-inset-bottom, 0px)); }
+</style>
+</head>
+<body class="hide-ph">
+
+<!-- ===================== 4. CONTENIDO ===================== -->
+
+<!-- Aviso de demo. ELIMINAR en el sitio final. -->
+<div class="demo-bar" role="note">
+  <div class="wrap">
+    <span>Versión de muestra. Las reseñas y algunos datos son de ejemplo, se reemplazan por los reales.</span>
+  </div>
+</div>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="#inicio">Dr. Mario De la Peña</a>
+    <!-- NÚMERO: cambiar 528330000000 por el WhatsApp real (52 + 10 dígitos) aquí y en la constante WHATSAPP del script -->
+    <a class="btn btn-wa btn-sm js-wa" href="https://wa.me/528330000000" target="_blank" rel="noopener">Agendar cita</a>
+  </div>
+</header>
+
+<main id="inicio">
+
+  <!-- PORTADA: la calificación de Google es el mensaje principal -->
+  <section class="hero">
+    <div class="wrap">
+      <div class="score rise">
+        <span class="num">4.9</span><!-- calificación real por confirmar -->
+        <span class="meta">
+          <!-- --fill: porcentaje de estrellas llenas (4.9 de 5 = 98%) -->
+          <span class="stars" style="--fill: 98%" aria-label="Calificación 4.9 de 5">★★★★★</span>
+          <span class="count">Opiniones de sus pacientes</span>
+          <span class="google">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.5 12.3c0-.8-.1-1.5-.2-2.2H12v4.2h5.9a5 5 0 0 1-2.2 3.3v2.7h3.5c2.1-1.9 3.3-4.7 3.3-8Z"/><path fill="#34A853" d="M12 23c3 0 5.5-1 7.2-2.7l-3.5-2.7c-1 .7-2.2 1-3.7 1-2.9 0-5.3-1.9-6.2-4.5H2.2v2.8A11 11 0 0 0 12 23Z"/><path fill="#FBBC05" d="M5.8 14.1a6.6 6.6 0 0 1 0-4.2V7.1H2.2a11 11 0 0 0 0 9.8l3.6-2.8Z"/><path fill="#EA4335" d="M12 5.4c1.6 0 3.1.6 4.2 1.7l3.1-3.1A11 11 0 0 0 2.2 7.1l3.6 2.8C6.7 7.3 9.1 5.4 12 5.4Z"/></svg>
+            Opiniones en Google
+          </span>
+        </span>
+      </div>
+      <h1 class="rise">Sus pacientes lo dicen <em>mejor que nadie</em>.</h1>
+      <p class="lead rise">40 años atendiendo a las familias de la zona norte de Tampico. Atención únicamente con cita.</p>
+      <div class="cta-row rise">
+        <a class="btn btn-wa btn-lg js-wa" href="https://wa.me/528330000000" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.4.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg>
+          Agendar cita por WhatsApp
+        </a>
+        <!-- ENLACE: perfil de Google del doctor -->
+        <a class="btn btn-ghost" href="https://www.google.com/maps/search/Dr+Mario+De+la+Pe%C3%B1a+Tampico" target="_blank" rel="noopener">Ver todas en Google</a>
+      </div>
+      <!-- Lo que más se repite en las reseñas reales. Ajustar al leerlas. -->
+      <div class="tags rise" aria-label="Lo que más mencionan los pacientes">
+        <span class="tag">Trato humano</span><span class="tag">Explica con calma</span><span class="tag">Puntual</span><span class="tag">Años de experiencia</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- CARRUSEL: se llena desde la lista RESEÑAS del script -->
+  <section class="reviews" aria-label="Opiniones de pacientes">
+    <p class="reviews-note">Reseñas de ejemplo. En el sitio final van las reales de su perfil de Google.</p>
+    <div class="marquee" style="--dur: 70s"><div class="track" id="row-1"></div></div>
+    <div class="marquee reverse" style="--dur: 80s"><div class="track" id="row-2"></div></div>
+  </section>
+
+  <!-- BANDA DE CITA: el llamado a la acción principal -->
+  <section class="cta-band" id="cita">
+    <div class="wrap">
+      <p class="closed">Atención solo con cita previa</p>
+      <h2>Reserve su consulta</h2>
+      <p>El consultorio abre únicamente para pacientes agendados. Escriba antes de acudir y su horario queda reservado para usted.</p>
+      <ol class="flow">
+        <li><span>Escriba por WhatsApp</span></li>
+        <li><span>Confirme su horario</span></li>
+        <li><span>Llegue a su hora</span></li>
+      </ol>
+      <a class="btn btn-wa btn-lg js-wa" href="https://wa.me/528330000000" target="_blank" rel="noopener">Agendar cita</a>
+    </div>
+  </section>
+
+  <!-- SOBRE EL DOCTOR: sección corta -->
+  <section class="about" id="doctor">
+    <div class="wrap">
+      <!-- FOTO: reemplazar este bloque por <img src="doctor.jpg" alt="Dr. Mario De la Peña"> -->
+      <div class="portrait"><span><b>MP</b>Aquí va la foto del doctor</span></div>
+      <div class="about-text">
+        <p class="eyebrow">Sobre el doctor</p>
+        <h2>Dr. Mario De la Peña</h2>
+        <p>Cuatro décadas de consulta personal en la zona norte. Atiende él mismo a cada paciente, sin intermediarios y sin salas de espera llenas.</p>
+        <dl class="facts">
+          <div><dt>Experiencia</dt><dd>40 años en Tampico</dd></div>
+          <div><dt>Especialidad</dt><dd>(su especialidad)</dd></div>
+          <div><dt>Cédula profesional</dt><dd>(su número de cédula)</dd></div>
+          <div><dt>Consultorio</dt><dd>(su dirección), zona norte · <a href="https://www.google.com/maps/search/Tampico+zona+norte" target="_blank" rel="noopener">Ver mapa</a></dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>Dr. Mario De la Peña · Tampico, Tamaulipas · Solo con cita</span>
+    <span><a href="#aviso">Aviso de privacidad</a> · Sitio por Sebastián González</span>
+  </div>
+</footer>
+
+<a class="btn btn-wa wa-float js-wa" href="https://wa.me/528330000000" target="_blank" rel="noopener" aria-label="Agendar cita por WhatsApp">
+  <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.2-.4.7-1.4.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.3-.2-.5-.3Z"/></svg>
+  Cita
+</a>
+
+<!-- Datos estructurados para Google (SEO local). Rellenar con datos reales. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Physician",
+  "name": "Dr. Mario De la Peña",
+  "medicalSpecialty": "POR_CONFIRMAR",
+  "address": { "@type": "PostalAddress", "streetAddress": "POR_CONFIRMAR", "addressLocality": "Tampico", "addressRegion": "Tamaulipas", "addressCountry": "MX" },
+  "telephone": "+52-833-000-0000",
+  "areaServed": ["Tampico", "Ciudad Madero"]
+}
+</script>
+
+<script>
+  // ===================== 5. RESEÑAS =====================
+  // Para poner las reales: copia nombre, tiempo y texto de cada reseña
+  // de Google (con permiso del doctor). Funciona con cualquier cantidad.
+  const RESENAS = [
+    { nombre: "Laura G.",    cuando: "hace 2 semanas", texto: "Me explicó todo con mucha calma y paciencia. Se nota la experiencia de tantos años." },
+    { nombre: "Jorge M.",    cuando: "hace 1 mes",     texto: "Toda mi familia se atiende con él desde hace más de 20 años. Muy recomendable." },
+    { nombre: "Patricia R.", cuando: "hace 3 meses",   texto: "Agendé por WhatsApp y me recibió puntual a mi hora. Cero esperas." },
+    { nombre: "Ricardo S.",  cuando: "hace 2 meses",   texto: "Un doctor de los de antes: escucha, revisa bien y no te apura." },
+    { nombre: "Ana L.",      cuando: "hace 5 meses",   texto: "Acertó con el diagnóstico cuando otros no habían podido. Le estoy muy agradecida." },
+    { nombre: "Héctor V.",   cuando: "hace 1 semana",  texto: "Excelente trato humano. Se toma el tiempo de responder todas las dudas." },
+    { nombre: "Sofía C.",    cuando: "hace 4 meses",   texto: "Consultorio limpio y tranquilo. Atención muy personal." },
+    { nombre: "Manuel T.",   cuando: "hace 6 meses",   texto: "Llevo años con él y siempre me ha atendido igual de bien. Confianza total." },
+  ];
+
+  // ===================== 6. SCRIPT =====================
+  const WHATSAPP = "528330000000"; // 52 + 10 dígitos, sin espacios
+  const MENSAJE = "Hola Dr. De la Peña, me gustaría agendar una cita.";
+
+  // Todos los botones con class="js-wa" abren WhatsApp con el mensaje escrito.
+  document.querySelectorAll(".js-wa").forEach((a) => {
+    a.href = "https://wa.me/" + WHATSAPP + "?text=" + encodeURIComponent(MENSAJE);
+  });
+
+  // Colores de los círculos con iniciales (se asignan en orden).
+  const COLORES = ["#23665a", "#8a5a14", "#3b5b8c", "#7a3e5c", "#4f6b2a", "#5b4a8a"];
+
+  function tarjeta(r, i) {
+    const iniciales = r.nombre.split(" ").map((p) => p[0]).join("").slice(0, 2);
+    const el = document.createElement("article");
+    el.className = "card";
+    el.innerHTML =
+      '<header><span class="avatar" style="background:' + COLORES[i % COLORES.length] + '"></span>' +
+      '<span class="who"><strong></strong><span></span></span></header>' +
+      '<span class="mini" aria-label="5 estrellas">★★★★★</span><p></p>';
+    // textContent evita que un texto de reseña se interprete como HTML
+    el.querySelector(".avatar").textContent = iniciales;
+    el.querySelector(".who strong").textContent = r.nombre;
+    el.querySelector(".who span").textContent = r.cuando;
+    el.querySelector("p").textContent = "“" + r.texto + "”";
+    return el;
+  }
+
+  // Cada fila muestra la mitad de las reseñas. Se agrega una copia oculta
+  // (aria-hidden) para que el desplazamiento sea continuo, sin saltos.
+  function llenarFila(id, lista, desfase) {
+    const fila = document.getElementById(id);
+    lista.forEach((r, i) => fila.appendChild(tarjeta(r, i + desfase)));
+    lista.forEach((r, i) => {
+      const copia = tarjeta(r, i + desfase);
+      copia.setAttribute("aria-hidden", "true");
+      fila.appendChild(copia);
+    });
+  }
+  const mitad = Math.ceil(RESENAS.length / 2);
+  llenarFila("row-1", RESENAS.slice(0, mitad), 0);
+  llenarFila("row-2", RESENAS.slice(mitad), mitad);
+
+  // Barra demo: muestra u oculta el resaltado de datos pendientes.
+  const toggle = document.getElementById("toggle-ph");
+  if (toggle) toggle.addEventListener("click", () => {
+    const oculto = document.body.classList.toggle("hide-ph");
+    toggle.textContent = oculto ? "Mostrar resaltado" : "Ocultar resaltado";
+  });
+</script>
+</body>
+</html>
